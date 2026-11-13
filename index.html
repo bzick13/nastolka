@@ -39,9 +39,13 @@
 
   <!-- Окно для рисования -->
   <div id="draw-overlay" class="hidden">
-    <div id="draw-timer">60</div>
-    <canvas id="canvas"></canvas>
+  <div id="draw-toolbar">
+    <button id="eraser-btn" type="button">🧽 Стёрка</button>
+    <button id="clear-btn" type="button">🗑️ Стереть всё</button>
   </div>
+  <div id="draw-timer">60</div>
+  <canvas id="canvas"></canvas>
+</div>
 
   <script type="module" src="app.js"></script>
 </body>
