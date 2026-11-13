@@ -2,7 +2,7 @@
 const GAMES = {
   draw: {
     label: 'Рисовать',
-    time: 6,
+    time: 7,
     points: 3,
     words: [
       'Яблоко', 'Солнце', 'Кот', 'Дом', 'Машина',
