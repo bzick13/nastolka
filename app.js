@@ -157,14 +157,35 @@ overlay.addEventListener('click', (e) => {
   if (e.target === overlay) closeOverlay();
 });
 
-/* PWA */
+/* ============ PWA: автообновление ============ */
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('service-worker.js').catch(() => {});
+  window.addEventListener('load', async () => {
+    try {
+      const registration = await navigator.serviceWorker.register('service-worker.js');
+
+      // Периодическая проверка обновлений
+      setInterval(() => registration.update(), 30000);
+
+      // Проверка при возврате на вкладку
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) registration.update();
+      });
+
+      // Когда новый SW активировался — перезагружаем страницу
+      registration.addEventListener('updatefound', () => {
+        const newWorker = registration.installing;
+        if (!newWorker) return;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'activated' && navigator.serviceWorker.controller) {
+            window.location.reload();
+          }
+        });
+      });
+    } catch (e) { /* ignore */ }
   });
 }
 
-/* Блокировка скролла */
+/* ============ БЛОКИРОВКА СКРОЛЛА ============ */
 const observer = new MutationObserver(() => {
   document.body.style.overflow =
     (!overlay.classList.contains('hidden') || !drawOverlay.classList.contains('hidden'))
