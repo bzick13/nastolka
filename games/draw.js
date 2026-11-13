@@ -43,9 +43,16 @@ function start(currentGame) {
   state.isRunning = true;
   startBtn.classList.add('hidden');
 
+  // ВАЖНО: снимаем старые слушатели ПЕРЕД новым раундом
+  removeDrawingListeners();
+
   drawOverlay.classList.remove('hidden');
-  resizeCanvas();
+
+  // Контекст получаем один раз; сбрасываем трансформацию
   ctx = canvas.getContext('2d');
+  resizeCanvas();          // внутри сделает setTransform + scale
+
+  // очищаем холст
   ctx.fillStyle = '#fff';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -74,11 +81,12 @@ function start(currentGame) {
 }
 
 function applyBrush() {
+  if (!ctx) return;
   if (eraserMode) {
-    ctx.strokeStyle = '#fff';   // стёрка: рисуем белым
+    ctx.strokeStyle = '#fff';
     ctx.lineWidth = 30;
   } else {
-    ctx.strokeStyle = '#000';   // обычная кисть
+    ctx.strokeStyle = '#000';
     ctx.lineWidth = 4;
   }
   ctx.lineCap = 'round';
@@ -148,9 +156,10 @@ function enableDrawing() {
   function onEnd() { drawing = false; }
 
   function onClear() {
+    if (!ctx) return;
     ctx.fillStyle = '#fff';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    applyBrush();                 // вернуть текущий цвет/толщину кисти
+    applyBrush();
   }
 
   function onToggleEraser() {
@@ -173,6 +182,7 @@ function enableDrawing() {
   canvas._listeners = { onStart, onMove, onEnd, onClear, onToggleEraser };
 }
 
+/* Экспортируем, чтобы app.js звал при закрытии оверлея */
 export function cleanup() {
   removeDrawingListeners();
 }
@@ -201,22 +211,32 @@ function resizeCanvas() {
   canvas.height = window.innerHeight * dpr;
   canvas.style.width = window.innerWidth + 'px';
   canvas.style.height = window.innerHeight + 'px';
+
   if (ctx) {
+    // сбрасываем накопленные трансформации
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.scale(dpr, dpr);
     applyBrush();
   }
 }
 
 window.addEventListener('resize', () => {
-  if (!drawOverlay.classList.contains('hidden')) {
+  if (!drawOverlay.classList.contains('hidden') && ctx) {
     const img = canvas.toDataURL();
     resizeCanvas();
     const image = new Image();
-    image.onload = () => ctx.drawImage(
-      image, 0, 0,
-      canvas.width / (window.devicePixelRatio || 1),
-      canvas.height / (window.devicePixelRatio || 1)
-    );
+    image.onload = () => {
+      // после resize — заново сбрасываем трансформацию и масштабируем
+      const dpr = window.devicePixelRatio || 1;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
+      ctx.drawImage(
+        image, 0, 0,
+        canvas.width / dpr,
+        canvas.height / dpr
+      );
+      applyBrush();
+    };
     image.src = img;
   }
 });
