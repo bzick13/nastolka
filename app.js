@@ -161,6 +161,9 @@ function openGame(key) {
   content.innerHTML = '';
   timerDisplay.classList.add('hidden');
   modalButtons.classList.add('hidden');
+  startBtn.classList.remove('hidden');
+  startBtn.onclick = null;
+  closeBtn.onclick = closeOverlay;
 
   if (game.rules) {
     renderRules(game);
@@ -177,7 +180,6 @@ function openGame(key) {
     return;
   }
 
-  // остальные — одно слово
   renderWord(game);
 }
 
@@ -191,6 +193,7 @@ function renderWord(game) {
   timerDisplay.classList.remove('hidden');
   timerDisplay.textContent = game.time;
   modalButtons.classList.remove('hidden');
+  startBtn.classList.remove('hidden');
   startBtn.onclick = () => {
     if (game.key === 'draw') startDrawGame(game);
     else startCountdownAndTimer(game);
@@ -206,6 +209,7 @@ function renderBlitz(game) {
   timerDisplay.classList.remove('hidden');
   timerDisplay.textContent = game.time;
   modalButtons.classList.remove('hidden');
+  startBtn.classList.remove('hidden');
   startBtn.onclick = () => startCountdownAndTimer(game);
 }
 
@@ -214,9 +218,9 @@ function renderDice(game) {
   content.innerHTML = `
     <div class="word">${word}</div>
   `;
-  timerDisplay.classList.add('hidden');
-  modalButtons.classList.remove('hidden');
-  startBtn.classList.add('hidden');
+  timerDisplay.classList.add('hidden');     // таймер скрыт
+  startBtn.classList.add('hidden');          // кнопка Старт скрыта
+  modalButtons.classList.remove('hidden');   // блок кнопок показан
   closeBtn.onclick = closeOverlay;
 }
 
@@ -237,9 +241,9 @@ function renderRules(game) {
       <p>За каждое задание начисляются баллы. Побеждает команда с наибольшим количеством баллов!</p>
     </div>
   `;
-  timerDisplay.classList.add('hidden');
-  modalButtons.classList.remove('hidden');
-  startBtn.classList.add('hidden');
+  timerDisplay.classList.add('hidden');     // таймер скрыт
+  startBtn.classList.add('hidden');          // кнопка Старт скрыта
+  modalButtons.classList.remove('hidden');   // блок кнопок показан
   closeBtn.onclick = closeOverlay;
 }
 
@@ -305,14 +309,12 @@ function startTimer(seconds) {
 
 /* ============ СТАРТ: РИСОВАНИЕ ============ */
 let ctx = null;
-let drawing = false;
 
 function startDrawGame(game) {
   if (isRunning) return;
   isRunning = true;
   startBtn.classList.add('hidden');
 
-  // Подготовка холста
   drawOverlay.classList.remove('hidden');
   resizeCanvas();
   ctx = canvas.getContext('2d');
@@ -323,7 +325,6 @@ function startDrawGame(game) {
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
 
-  // Счётчик 3-2-1 на холсте
   let count = 3;
   drawTimer.textContent = `3`;
   drawTimer.style.color = '#1565c0';
@@ -339,7 +340,6 @@ function startDrawGame(game) {
     } else {
       clearInterval(countdownInterval);
       countdownInterval = null;
-      // Запуск рисования и таймера
       enableDrawing();
       startDrawTimer(game);
     }
@@ -372,7 +372,7 @@ function enableDrawing() {
     ctx.lineTo(p.x, p.y);
     ctx.stroke();
   }
-  function end(e) {
+  function end() {
     drawing = false;
   }
 
@@ -422,7 +422,6 @@ function endDrawRound(game) {
   drawOverlay.classList.add('hidden');
   isRunning = false;
 
-  // Возвращаемся к окну со словом и баллами
   const word = rand(game.words);
   content.innerHTML = `
     <div class="word">${word}</div>
@@ -453,11 +452,14 @@ function resizeCanvas() {
 
 window.addEventListener('resize', () => {
   if (!drawOverlay.classList.contains('hidden')) {
-    // Сохраняем содержимое при ресайзе
     const img = canvas.toDataURL();
     resizeCanvas();
     const image = new Image();
-    image.onload = () => ctx.drawImage(image, 0, 0, canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1));
+    image.onload = () => ctx.drawImage(
+      image, 0, 0,
+      canvas.width / (window.devicePixelRatio || 1),
+      canvas.height / (window.devicePixelRatio || 1)
+    );
     image.src = img;
   }
 });
@@ -478,7 +480,6 @@ function closeOverlay() {
 
 closeBtn.onclick = closeOverlay;
 
-// Закрытие по клику вне модалки
 overlay.addEventListener('click', (e) => {
   if (e.target === overlay) closeOverlay();
 });
@@ -490,7 +491,7 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-/* ============ БЛОКИРОВКА СКРОЛЛА ПРИ ОТКРЫТОМ ОВЕРЛЕЕ ============ */
+/* ============ БЛОКИРОВКА СКРОЛЛА ============ */
 const observer = new MutationObserver(() => {
   document.body.style.overflow =
     (!overlay.classList.contains('hidden') || !drawOverlay.classList.contains('hidden'))
