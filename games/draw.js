@@ -7,8 +7,8 @@ import {
 
 export const META = {
   label: 'Рисовать',
-  time: 60,
-  points: 2,
+  time: 7,
+  points: 3,
   words: [
     'Яблоко', 'Солнце', 'Кот', 'Дом', 'Машина',
     'Дерево', 'Книга', 'Рыба', 'Часы', 'Кресло'
@@ -18,11 +18,13 @@ export const META = {
 let ctx = null;
 let eraserMode = false;
 let drawing = false;
+let currentGameRef = null; // чтобы «Готово» знало, какой раунд завершать
 
 const clearBtn = document.getElementById('clear-btn');
 const eraserBtn = document.getElementById('eraser-btn');
+const doneBtn = document.getElementById('done-btn');
 
-/* Открытие: слово + кнопка Старт */
+/* Открытие */
 export function open(currentGame) {
   currentGame.currentWord = rand(META.words);
 
@@ -42,32 +44,27 @@ export function open(currentGame) {
 function start(currentGame) {
   if (state.isRunning) return;
   state.isRunning = true;
+  currentGameRef = currentGame;
   startBtn.classList.add('hidden');
 
   removeDrawingListeners();
 
   drawOverlay.classList.remove('hidden');
 
-  // 1) сначала готовим размер canvas в CSS-пикселях (без dpr!)
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
   canvas.style.width = window.innerWidth + 'px';
   canvas.style.height = window.innerHeight + 'px';
 
-  // 2) получаем контекст уже после установки размера
   ctx = canvas.getContext('2d');
-
-  // 3) чистим холст
   ctx.fillStyle = '#fff';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-  // 4) сбрасываем режимы
   eraserMode = false;
   drawing = false;
   eraserBtn.classList.remove('active');
   applyBrush();
 
-  // 5) отсчёт
   let count = 3;
   drawTimer.textContent = '3';
   drawTimer.style.color = '#1565c0';
@@ -119,9 +116,16 @@ function startDrawTimer(currentGame) {
 }
 
 function endRound(currentGame) {
+  // останавливаем таймер и отсчёт (если «Готово» нажали во время отсчёта)
+  clearInterval(state.timerInterval);
+  clearInterval(state.countdownInterval);
+  state.timerInterval = null;
+  state.countdownInterval = null;
+
   removeDrawingListeners();
   drawOverlay.classList.add('hidden');
   state.isRunning = false;
+  currentGameRef = null;
 
   content.innerHTML = `
     <div class="word">${currentGame.currentWord}</div>
@@ -178,6 +182,13 @@ function onToggleEraser() {
   applyBrush();
 }
 
+/* 🔑 Кнопка «Готово» — досрочное завершение раунда */
+function onDone() {
+  if (!currentGameRef) return;
+  signalEnd();
+  endRound(currentGameRef);
+}
+
 function enableDrawing() {
   drawing = false;
 
@@ -191,6 +202,7 @@ function enableDrawing() {
 
   clearBtn.addEventListener('click', onClear);
   eraserBtn.addEventListener('click', onToggleEraser);
+  doneBtn.addEventListener('click', onDone);
 }
 
 export function cleanup() {
@@ -208,11 +220,13 @@ function removeDrawingListeners() {
 
   clearBtn.removeEventListener('click', onClear);
   eraserBtn.removeEventListener('click', onToggleEraser);
+  doneBtn.removeEventListener('click', onDone);
 
   drawing = false;
+  currentGameRef = null;
 }
 
-/* resize: сохраняем картинку через offscreen canvas */
+/* resize */
 window.addEventListener('resize', () => {
   if (drawOverlay.classList.contains('hidden') || !ctx) return;
 
