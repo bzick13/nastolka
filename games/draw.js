@@ -18,7 +18,7 @@ export const META = {
 let ctx = null;
 let eraserMode = false;
 let drawing = false;
-let currentGameRef = null; // чтобы «Готово» знало, какой раунд завершать
+let currentGameRef = null;
 
 const clearBtn = document.getElementById('clear-btn');
 const eraserBtn = document.getElementById('eraser-btn');
@@ -116,13 +116,22 @@ function startDrawTimer(currentGame) {
 }
 
 function endRound(currentGame) {
-  // останавливаем таймер и отсчёт (если «Готово» нажали во время отсчёта)
+  // 1. Останавливаем все интервалы
   clearInterval(state.timerInterval);
   clearInterval(state.countdownInterval);
   state.timerInterval = null;
   state.countdownInterval = null;
 
+  // 2. Жёстко прерываем текущий рисунок
+  drawing = false;
+  if (ctx) {
+    ctx.beginPath(); // закрываем текущий путь, чтобы линия не тянулась
+  }
+
+  // 3. Снимаем слушатели
   removeDrawingListeners();
+
+  // 4. Скрываем окно и показываем результат
   drawOverlay.classList.add('hidden');
   state.isRunning = false;
   currentGameRef = null;
@@ -149,7 +158,7 @@ function getPos(e) {
 }
 
 function onStart(e) {
-  if (!ctx) return;
+  if (!ctx || !state.isRunning || drawOverlay.classList.contains('hidden')) return;
   e.preventDefault();
   drawing = true;
   const p = getPos(e);
@@ -158,7 +167,7 @@ function onStart(e) {
 }
 
 function onMove(e) {
-  if (!drawing || !ctx) return;
+  if (!drawing || !ctx || !state.isRunning) return;
   e.preventDefault();
   const p = getPos(e);
   ctx.lineTo(p.x, p.y);
@@ -167,23 +176,36 @@ function onMove(e) {
 
 function onEnd() {
   drawing = false;
+  if (ctx) ctx.beginPath();
 }
 
-function onClear() {
+function onClear(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
   if (!ctx) return;
   ctx.fillStyle = '#fff';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   applyBrush();
 }
 
-function onToggleEraser() {
+function onToggleEraser(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
   eraserMode = !eraserMode;
   eraserBtn.classList.toggle('active', eraserMode);
   applyBrush();
 }
 
 /* 🔑 Кнопка «Готово» — досрочное завершение раунда */
-function onDone() {
+function onDone(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
   if (!currentGameRef) return;
   signalEnd();
   endRound(currentGameRef);
@@ -199,6 +221,7 @@ function enableDrawing() {
   canvas.addEventListener('touchstart', onStart, { passive: false });
   canvas.addEventListener('touchmove', onMove, { passive: false });
   canvas.addEventListener('touchend', onEnd);
+  canvas.addEventListener('touchcancel', onEnd);
 
   clearBtn.addEventListener('click', onClear);
   eraserBtn.addEventListener('click', onToggleEraser);
@@ -217,6 +240,7 @@ function removeDrawingListeners() {
   canvas.removeEventListener('touchstart', onStart);
   canvas.removeEventListener('touchmove', onMove);
   canvas.removeEventListener('touchend', onEnd);
+  canvas.removeEventListener('touchcancel', onEnd);
 
   clearBtn.removeEventListener('click', onClear);
   eraserBtn.removeEventListener('click', onToggleEraser);
