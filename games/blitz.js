@@ -6,7 +6,7 @@ import {
 
 export const META = {
   label: 'Блиц',
-  time: 30,
+  time: 60,
   points: 5,
   words: [
     'Кошка', 'Собака', 'Солнце', 'Луна', 'Море', 'Лес', 'Гора',
