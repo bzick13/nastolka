@@ -145,6 +145,13 @@ function clearIntervals() {
   countdownInterval = null;
 }
 
+/* Скрывает таймер и кнопку «Старт» — используется в dice и rules */
+function hideTimerAndStart() {
+  timerDisplay.classList.add('hidden');
+  startBtn.classList.add('hidden');
+  startBtn.onclick = null;
+}
+
 /* ============ ОТКРЫТИЕ ИГР ============ */
 document.querySelectorAll('[data-game]').forEach(btn => {
   btn.addEventListener('click', () => openGame(btn.dataset.game));
@@ -218,9 +225,8 @@ function renderDice(game) {
   content.innerHTML = `
     <div class="word">${word}</div>
   `;
-  timerDisplay.classList.add('hidden');     // таймер скрыт
-  startBtn.classList.add('hidden');          // кнопка Старт скрыта
-  modalButtons.classList.remove('hidden');   // блок кнопок показан
+  hideTimerAndStart();                       // таймер и Старт скрыты
+  modalButtons.classList.remove('hidden');   // блок кнопок показан (только Закрыть)
   closeBtn.onclick = closeOverlay;
 }
 
@@ -241,9 +247,8 @@ function renderRules(game) {
       <p>За каждое задание начисляются баллы. Побеждает команда с наибольшим количеством баллов!</p>
     </div>
   `;
-  timerDisplay.classList.add('hidden');     // таймер скрыт
-  startBtn.classList.add('hidden');          // кнопка Старт скрыта
-  modalButtons.classList.remove('hidden');   // блок кнопок показан
+  hideTimerAndStart();                       // таймер и Старт скрыты
+  modalButtons.classList.remove('hidden');   // блок кнопок показан (только Закрыть)
   closeBtn.onclick = closeOverlay;
 }
 
