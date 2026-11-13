@@ -2,7 +2,7 @@
 const GAMES = {
   draw: {
     label: 'Рисовать',
-    time: 4,
+    time: 7,
     points: 3,
     words: [
       'Яблоко', 'Солнце', 'Кот', 'Дом', 'Машина',
@@ -160,7 +160,7 @@ document.querySelectorAll('[data-game]').forEach(btn => {
 function openGame(key) {
   const game = GAMES[key];
   if (!game) return;
-  currentGame = { key, ...game };
+  currentGame = { key, ...game, currentWord: null, currentWords: null };
   isRunning = false;
   clearIntervals();
 
@@ -191,10 +191,14 @@ function openGame(key) {
 }
 
 /* ============ РЕНДЕРЫ ============ */
+
+/* Общий рендер: слово фиксируется в currentGame.currentWord */
 function renderWord(game) {
-  const word = rand(game.words);
+  // фиксируем слово на весь раунд
+  currentGame.currentWord = rand(game.words);
+
   content.innerHTML = `
-    <div class="word">${word}</div>
+    <div class="word">${currentGame.currentWord}</div>
     <div class="points">Баллы: ${game.points}</div>
   `;
   timerDisplay.classList.remove('hidden');
@@ -207,10 +211,12 @@ function renderWord(game) {
   };
 }
 
+/* Блиц: список слов фиксируется в currentGame.currentWords */
 function renderBlitz(game) {
-  const words = pickN(game.words, 5);
+  currentGame.currentWords = pickN(game.words, 5);
+
   content.innerHTML = `
-    <div class="blitz-list">${words.map(w => `<div>${w}</div>`).join('')}</div>
+    <div class="blitz-list">${currentGame.currentWords.map(w => `<div>${w}</div>`).join('')}</div>
     <div class="points">Баллы: ${game.points}</div>
   `;
   timerDisplay.classList.remove('hidden');
@@ -225,8 +231,8 @@ function renderDice(game) {
   content.innerHTML = `
     <div class="word">${word}</div>
   `;
-  hideTimerAndStart();                       // таймер и Старт скрыты
-  modalButtons.classList.remove('hidden');   // блок кнопок показан (только Закрыть)
+  hideTimerAndStart();
+  modalButtons.classList.remove('hidden');
   closeBtn.onclick = closeOverlay;
 }
 
@@ -247,8 +253,8 @@ function renderRules(game) {
       <p>За каждое задание начисляются баллы. Побеждает команда с наибольшим количеством баллов!</p>
     </div>
   `;
-  hideTimerAndStart();                       // таймер и Старт скрыты
-  modalButtons.classList.remove('hidden');   // блок кнопок показан (только Закрыть)
+  hideTimerAndStart();
+  modalButtons.classList.remove('hidden');
   closeBtn.onclick = closeOverlay;
 }
 
@@ -279,18 +285,18 @@ function startCountdownAndTimer(game) {
   }, 1000);
 }
 
+/* После отсчёта показываем ТО ЖЕ слово, что было до Старта */
 function renderWordAfterStart(game) {
-  const word = rand(game.words);
   content.innerHTML = `
-    <div class="word">${word}</div>
+    <div class="word">${currentGame.currentWord}</div>
     <div class="points">Баллы: ${game.points}</div>
   `;
 }
 
+/* После отсчёта показываем ТОТ ЖЕ список, что был до Старта */
 function renderBlitzAfterStart(game) {
-  const words = pickN(game.words, 5);
   content.innerHTML = `
-    <div class="blitz-list">${words.map(w => `<div>${w}</div>`).join('')}</div>
+    <div class="blitz-list">${currentGame.currentWords.map(w => `<div>${w}</div>`).join('')}</div>
     <div class="points">Баллы: ${game.points}</div>
   `;
 }
@@ -422,14 +428,14 @@ function startDrawTimer(game) {
   }, 1000);
 }
 
+/* После раунда рисования показываем ТО ЖЕ слово, что было зафиксировано */
 function endDrawRound(game) {
   removeDrawingListeners();
   drawOverlay.classList.add('hidden');
   isRunning = false;
 
-  const word = rand(game.words);
   content.innerHTML = `
-    <div class="word">${word}</div>
+    <div class="word">${currentGame.currentWord}</div>
     <div class="points">Баллы: ${game.points}</div>
   `;
   timerDisplay.textContent = '0';
