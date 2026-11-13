@@ -119,9 +119,6 @@ export function openGame(key) {
   state.isRunning = false;
   clearIntervals();
 
-  // на случай, если предыдущая игра оставила слушатели рисования
-  draw.cleanup?.();
-
   overlay.classList.remove('hidden');
   content.innerHTML = '';
   timerDisplay.classList.add('hidden');
@@ -137,8 +134,9 @@ export function openGame(key) {
 export function closeOverlay() {
   clearIntervals();
 
-  // снять слушатели рисования (если играли в «Рисовать»)
-  draw.cleanup?.();
+  if (state.currentGame?.key === 'draw') {
+    draw.cleanup?.();
+  }
 
   drawOverlay.classList.add('hidden');
   overlay.classList.add('hidden');
