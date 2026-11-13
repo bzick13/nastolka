@@ -240,6 +240,9 @@ h1 {
   box-shadow: 0 0 0 3px rgba(245,124,0,0.35);
 }
 
+#done-btn { background: #2e7d32; }
+#done-btn:hover { background: #388e3c; }
+
 #canvas {
   display: block;
   width: 100%;
@@ -294,7 +297,6 @@ h1 {
 
   #timer-display { font-size: 1.4rem; top: 6px; right: 12px; }
 
-  /* Окно рисования в горизонтали — панель та же, но компактнее */
   #draw-timer {
     font-size: 1.6rem;
     padding: 2px 10px;
