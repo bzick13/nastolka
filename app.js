@@ -13,7 +13,7 @@ export const GAMES = { draw, speak, show, reverse, yesno, blitz, dice, rules };
 
 /* ============ СОСТОЯНИЕ ============ */
 export const state = {
-  currentGame: null,   // { key, game, currentWord, currentWords }
+  currentGame: null,   // { key, meta, currentWord, currentWords }
   timerInterval: null,
   countdownInterval: null,
   isRunning: false,
@@ -119,6 +119,9 @@ export function openGame(key) {
   state.isRunning = false;
   clearIntervals();
 
+  // на случай, если предыдущая игра оставила слушатели рисования
+  draw.cleanup?.();
+
   overlay.classList.remove('hidden');
   content.innerHTML = '';
   timerDisplay.classList.add('hidden');
@@ -133,9 +136,10 @@ export function openGame(key) {
 /* ============ ЗАКРЫТИЕ ============ */
 export function closeOverlay() {
   clearIntervals();
-  if (state.currentGame?.key === 'draw') {
-    import('./games/draw.js').then(m => m.cleanup?.());
-  }
+
+  // снять слушатели рисования (если играли в «Рисовать»)
+  draw.cleanup?.();
+
   drawOverlay.classList.add('hidden');
   overlay.classList.add('hidden');
   state.isRunning = false;
