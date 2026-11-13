@@ -5,13 +5,19 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Универсальное скрытие — критично для timer-display и start-btn */
+/* Универсальное скрытие */
 .hidden { display: none !important; }
+
+html, body {
+  width: 100%;
+  min-height: 100%;
+}
 
 body {
   font-family: 'Segoe UI', system-ui, sans-serif;
   background: linear-gradient(160deg, #e3f2fd 0%, #bbdefb 100%);
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -90,6 +96,8 @@ h1 {
   width: 100%;
   max-width: 600px;
   min-height: 320px;
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -219,49 +227,38 @@ h1 {
   .btn { font-size: 1.3rem; padding: 26px 12px; }
 }
 
-/* Панель инструментов для рисования */
-#draw-toolbar {
-  position: absolute;
-  top: 10px;
-  left: 16px;
-  display: flex;
-  gap: 10px;
-  z-index: 10;
-}
+/* Горизонтальная ориентация: компактная раскладка */
+@media (orientation: landscape) and (max-height: 500px) {
+  header { padding: 8px 10px; }
+  h1 { font-size: 1.8rem; letter-spacing: 1px; }
 
-#draw-toolbar button {
-  border: none;
-  border-radius: 12px;
-  padding: 10px 16px;
-  font-size: 1rem;
-  font-weight: 600;
-  color: #fff;
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  transition: transform 0.1s, background 0.15s;
-}
+  #menu {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    padding: 8px;
+    max-width: 100%;
+  }
 
-#draw-toolbar button:active {
-  transform: scale(0.95);
-}
+  .btn { padding: 14px 6px; font-size: 0.95rem; border-radius: 12px; }
 
-#clear-btn {
-  background: #c62828;
-}
-#clear-btn:hover {
-  background: #d32f2f;
-}
+  #modal {
+    min-height: 200px;
+    max-height: calc(100dvh - 20px);
+    padding: 16px 20px;
+  }
 
-#eraser-btn {
-  background: #1565c0;
-}
-#eraser-btn:hover {
-  background: #1976d2;
-}
+  #overlay { padding: 10px; }
 
-#eraser-btn.active {
-  background: #f57c00;
-  box-shadow: 0 0 0 3px rgba(245,124,0,0.35);
+  .word { font-size: 1.6rem; }
+  .countdown { font-size: 3.2rem; }
+  .blitz-list { font-size: 1rem; gap: 4px; }
+
+  #timer-display { font-size: 1.4rem; top: 6px; right: 12px; }
+
+  #draw-timer { font-size: 1.6rem; padding: 2px 10px; top: 6px; right: 10px; }
+
+  #draw-toolbar { top: 6px; left: 10px; gap: 8px; }
+  #draw-toolbar button { padding: 6px 10px; font-size: 0.85rem; }
 }
 
 @media (max-width: 480px) {
