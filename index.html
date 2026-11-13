@@ -1,1 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#1565c0">
+  <title>Настолка</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎲</text></svg>">
+</head>
+<body>
+  <header>
+    <h1>Настолка</h1>
+  </header>
 
+  <main id="menu">
+    <button class="btn blue" data-game="draw">🎨 Рисовать</button>
+    <button class="btn blue" data-game="speak">🗣️ Говорить</button>
+    <button class="btn blue" data-game="show">🙌 Показывать</button>
+    <button class="btn blue" data-game="reverse">🔄 Слово задом наперёд</button>
+    <button class="btn blue" data-game="yesno">✅ Да/Нет</button>
+    <button class="btn blue" data-game="blitz">⚡ Блиц</button>
+    <button class="btn lightblue" data-game="dice">🎲 Бросить кубик</button>
+    <button class="btn lightblue" data-game="rules">📖 Правила игры</button>
+  </main>
+
+  <!-- Оверлей -->
+  <div id="overlay" class="hidden">
+    <div id="modal">
+      <div id="timer-display" class="hidden">60</div>
+      <div id="content"></div>
+      <div id="modal-buttons" class="hidden">
+        <button id="start-btn" class="btn green">Старт</button>
+        <button id="close-btn" class="btn red">Закрыть</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Окно для рисования -->
+  <div id="draw-overlay" class="hidden">
+    <div id="draw-timer">60</div>
+    <canvas id="canvas"></canvas>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
