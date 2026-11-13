@@ -7,7 +7,7 @@ import {
 
 export const META = {
   label: 'Рисовать',
-  time: 60,
+  time: 6,
   points: 2,
   words: [
     'Яблоко', 'Солнце', 'Кот', 'Дом', 'Машина',
