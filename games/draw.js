@@ -7,7 +7,7 @@ import {
 
 export const META = {
   label: 'Рисовать',
-  time: 8,
+  time: 7,
   points: 3,
   words: [
     'Яблоко', 'Солнце', 'Кот', 'Дом', 'Машина',
@@ -18,7 +18,6 @@ export const META = {
 let ctx = null;
 let eraserMode = false;
 let drawing = false;
-let currentGameRef = null;
 
 const clearBtn = document.getElementById('clear-btn');
 const eraserBtn = document.getElementById('eraser-btn');
@@ -44,7 +43,6 @@ export function open(currentGame) {
 function start(currentGame) {
   if (state.isRunning) return;
   state.isRunning = true;
-  currentGameRef = currentGame;
   startBtn.classList.add('hidden');
 
   removeDrawingListeners();
@@ -65,6 +63,12 @@ function start(currentGame) {
   eraserBtn.classList.remove('active');
   applyBrush();
 
+  // Навешиваем обработчики кнопок СРАЗУ — «Готово» работает и во время отсчёта
+  clearBtn.addEventListener('click', onClear);
+  eraserBtn.addEventListener('click', onToggleEraser);
+  doneBtn.addEventListener('click', onDone);
+
+  // Рисование — только после отсчёта
   let count = 3;
   drawTimer.textContent = '3';
   drawTimer.style.color = '#1565c0';
@@ -115,26 +119,20 @@ function startDrawTimer(currentGame) {
   }, 1000);
 }
 
+/* Завершение раунда — вызывается и по таймеру, и по кнопке «Готово» */
 function endRound(currentGame) {
-  // 1. Останавливаем все интервалы
   clearInterval(state.timerInterval);
   clearInterval(state.countdownInterval);
   state.timerInterval = null;
   state.countdownInterval = null;
 
-  // 2. Жёстко прерываем текущий рисунок
   drawing = false;
-  if (ctx) {
-    ctx.beginPath(); // закрываем текущий путь, чтобы линия не тянулась
-  }
+  if (ctx) ctx.beginPath();
 
-  // 3. Снимаем слушатели
   removeDrawingListeners();
 
-  // 4. Скрываем окно и показываем результат
   drawOverlay.classList.add('hidden');
   state.isRunning = false;
-  currentGameRef = null;
 
   content.innerHTML = `
     <div class="word">${currentGame.currentWord}</div>
@@ -158,7 +156,7 @@ function getPos(e) {
 }
 
 function onStart(e) {
-  if (!ctx || !state.isRunning || drawOverlay.classList.contains('hidden')) return;
+  if (!ctx || !state.isRunning) return;
   e.preventDefault();
   drawing = true;
   const p = getPos(e);
@@ -180,10 +178,7 @@ function onEnd() {
 }
 
 function onClear(e) {
-  if (e) {
-    e.preventDefault();
-    e.stopPropagation();
-  }
+  if (e) { e.preventDefault(); e.stopPropagation(); }
   if (!ctx) return;
   ctx.fillStyle = '#fff';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -191,24 +186,23 @@ function onClear(e) {
 }
 
 function onToggleEraser(e) {
-  if (e) {
-    e.preventDefault();
-    e.stopPropagation();
-  }
+  if (e) { e.preventDefault(); e.stopPropagation(); }
   eraserMode = !eraserMode;
   eraserBtn.classList.toggle('active', eraserMode);
   applyBrush();
 }
 
-/* 🔑 Кнопка «Готово» — досрочное завершение раунда */
+/* 🔑 Готово */
 function onDone(e) {
-  if (e) {
-    e.preventDefault();
-    e.stopPropagation();
-  }
-  if (!currentGameRef) return;
-  signalEnd();
-  endRound(currentGameRef);
+  if (e) { e.preventDefault(); e.stopPropagation(); }
+  if (!state.isRunning) return;          // уже завершили — игнорируем
+  if (!state.currentGame) return;
+
+  // прерываем текущую линию, чтобы после «Готово» ничего не дорисовывалось
+  drawing = false;
+  if (ctx) ctx.beginPath();
+
+  endRound(state.currentGame);
 }
 
 function enableDrawing() {
@@ -222,10 +216,6 @@ function enableDrawing() {
   canvas.addEventListener('touchmove', onMove, { passive: false });
   canvas.addEventListener('touchend', onEnd);
   canvas.addEventListener('touchcancel', onEnd);
-
-  clearBtn.addEventListener('click', onClear);
-  eraserBtn.addEventListener('click', onToggleEraser);
-  doneBtn.addEventListener('click', onDone);
 }
 
 export function cleanup() {
@@ -247,7 +237,6 @@ function removeDrawingListeners() {
   doneBtn.removeEventListener('click', onDone);
 
   drawing = false;
-  currentGameRef = null;
 }
 
 /* resize */
