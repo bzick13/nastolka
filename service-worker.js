@@ -1,10 +1,18 @@
-const CACHE_NAME = 'nastolka-v1';
+const CACHE_NAME = 'nastolka-v2';
 const ASSETS = [
   './',
   './index.html',
   './styles.css',
   './app.js',
-  './manifest.json'
+  './manifest.json',
+  './games/draw.js',
+  './games/speak.js',
+  './games/show.js',
+  './games/reverse.js',
+  './games/yesno.js',
+  './games/blitz.js',
+  './games/dice.js',
+  './games/rules.js'
 ];
 
 self.addEventListener('install', event => {
