@@ -1,13 +1,13 @@
 import {
   state, content, timerDisplay, startBtn, closeBtn,
   drawOverlay, drawTimer, canvas,
-  rand, clearIntervals, signalStart, signalEnd,
+  rand, signalStart, signalEnd,
   showModalButtons, closeOverlay
 } from '../app.js';
 
 export const META = {
   label: 'Рисовать',
-  time: 6,
+  time: 7,
   points: 3,
   words: [
     'Яблоко', 'Солнце', 'Кот', 'Дом', 'Машина',
@@ -16,6 +16,10 @@ export const META = {
 };
 
 let ctx = null;
+let eraserMode = false;
+
+const clearBtn = document.getElementById('clear-btn');
+const eraserBtn = document.getElementById('eraser-btn');
 
 /* Открытие: показываем слово + кнопку Старт */
 export function open(currentGame) {
@@ -44,10 +48,10 @@ function start(currentGame) {
   ctx = canvas.getContext('2d');
   ctx.fillStyle = '#fff';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.strokeStyle = '#000';
-  ctx.lineWidth = 4;
-  ctx.lineCap = 'round';
-  ctx.lineJoin = 'round';
+
+  eraserMode = false;
+  eraserBtn.classList.remove('active');
+  applyBrush();
 
   let count = 3;
   drawTimer.textContent = '3';
@@ -67,6 +71,18 @@ function start(currentGame) {
       startDrawTimer(currentGame);
     }
   }, 1000);
+}
+
+function applyBrush() {
+  if (eraserMode) {
+    ctx.strokeStyle = '#fff';   // стёрка: рисуем белым
+    ctx.lineWidth = 30;
+  } else {
+    ctx.strokeStyle = '#000';   // обычная кисть
+    ctx.lineWidth = 4;
+  }
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
 }
 
 function startDrawTimer(currentGame) {
@@ -131,6 +147,18 @@ function enableDrawing() {
   }
   function onEnd() { drawing = false; }
 
+  function onClear() {
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    applyBrush();                 // вернуть текущий цвет/толщину кисти
+  }
+
+  function onToggleEraser() {
+    eraserMode = !eraserMode;
+    eraserBtn.classList.toggle('active', eraserMode);
+    applyBrush();
+  }
+
   canvas.addEventListener('mousedown', onStart);
   canvas.addEventListener('mousemove', onMove);
   canvas.addEventListener('mouseup', onEnd);
@@ -139,7 +167,10 @@ function enableDrawing() {
   canvas.addEventListener('touchmove', onMove, { passive: false });
   canvas.addEventListener('touchend', onEnd);
 
-  canvas._listeners = { onStart, onMove, onEnd };
+  clearBtn.addEventListener('click', onClear);
+  eraserBtn.addEventListener('click', onToggleEraser);
+
+  canvas._listeners = { onStart, onMove, onEnd, onClear, onToggleEraser };
 }
 
 export function cleanup() {
@@ -148,7 +179,8 @@ export function cleanup() {
 
 function removeDrawingListeners() {
   if (!canvas._listeners) return;
-  const { onStart, onMove, onEnd } = canvas._listeners;
+  const { onStart, onMove, onEnd, onClear, onToggleEraser } = canvas._listeners;
+
   canvas.removeEventListener('mousedown', onStart);
   canvas.removeEventListener('mousemove', onMove);
   canvas.removeEventListener('mouseup', onEnd);
@@ -156,6 +188,10 @@ function removeDrawingListeners() {
   canvas.removeEventListener('touchstart', onStart);
   canvas.removeEventListener('touchmove', onMove);
   canvas.removeEventListener('touchend', onEnd);
+
+  clearBtn.removeEventListener('click', onClear);
+  eraserBtn.removeEventListener('click', onToggleEraser);
+
   canvas._listeners = null;
 }
 
@@ -167,10 +203,7 @@ function resizeCanvas() {
   canvas.style.height = window.innerHeight + 'px';
   if (ctx) {
     ctx.scale(dpr, dpr);
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    ctx.lineWidth = 4;
-    ctx.strokeStyle = '#000';
+    applyBrush();
   }
 }
 
