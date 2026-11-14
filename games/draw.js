@@ -7,7 +7,7 @@ import {
 
 export const META = {
   label: 'Рисовать',
-  time: 60,
+  time: 90,
   points: 2,
   words: [
 'Грустный огурец',
