@@ -23,9 +23,12 @@
     <button class="btn blue" data-game="blitz">⚡ Блиц</button>
     <button class="btn lightblue" data-game="dice">🎲 Бросить кубик</button>
     <button class="btn lightblue" data-game="rules">📖 Правила игры</button>
+
+    <!-- Новая кнопка подсчета баллов -->
+    <button class="btn green" id="score-game-btn">📊 Подсчет баллов</button>
   </main>
 
-  <!-- Оверлей -->
+  <!-- Оверлей для обычных игр -->
   <div id="overlay" class="hidden">
     <div id="modal">
       <div id="timer-display" class="hidden">60</div>
@@ -46,6 +49,46 @@
     </div>
     <div id="draw-timer">60</div>
     <canvas id="canvas"></canvas>
+  </div>
+
+  <!-- Окно настройки подсчета баллов -->
+  <div id="score-setup-overlay" class="hidden">
+    <div class="score-modal">
+      <h2>Настройка игры</h2>
+      <label>Количество команд:
+        <select id="score-team-count">
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+        </select>
+      </label>
+      <div id="score-teams-config"></div>
+      <div class="modal-buttons-row">
+        <button id="score-start-btn" class="btn green">Начать</button>
+        <button id="score-cancel-btn" class="btn red">Отмена</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Окно самого табло -->
+  <div id="score-board-overlay" class="hidden">
+    <div class="score-topbar">
+      <button id="score-reset-btn" class="btn red">🔄 Сбросить</button>
+      <button id="score-exit-btn" class="btn red">✖ Закрыть</button>
+    </div>
+    <div id="score-teams-list"></div>
+    <button id="score-end-turn-btn" class="btn green score-end-turn">Завершить ход</button>
+  </div>
+
+  <!-- Всплывающее окошко для выбора баллов -->
+  <div id="score-points-modal" class="hidden">
+    <div class="score-points-content">
+      <h3 id="score-modal-team-name">Команда</h3>
+      <div class="score-points-grid" id="score-points-grid">
+        <!-- Кнопки от -3 до 6 генерируются в JS -->
+      </div>
+      <button id="score-modal-close" class="btn red">Отмена</button>
+    </div>
   </div>
 
   <script type="module" src="app.js"></script>
