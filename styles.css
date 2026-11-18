@@ -75,7 +75,7 @@ h1 {
 .red { background: #c62828; }
 .red:hover { background: #d32f2f; }
 
-/* Оверлей */
+/* Оверлей (для основных игр) */
 #overlay {
   position: fixed;
   inset: 0;
@@ -317,6 +317,18 @@ h1 {
     line-height: 1.1;
     white-space: nowrap;
   }
+
+  /* Адаптация табло под горизонтальный экран */
+  #score-teams-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .score-team-btn {
+    width: calc(50% - 10px); /* По две кнопки в ряд */
+    padding: 12px;
+    font-size: 1.1rem;
+  }
 }
 
 @media (max-width: 480px) and (orientation: portrait) {
@@ -329,4 +341,159 @@ h1 {
     padding: 8px 12px;
     font-size: 0.9rem;
   }
+}
+
+/* ============ ПОДСЧЕТ БАЛЛОВ ============ */
+
+/* Кнопка "Подсчет баллов" на всю ширину */
+#score-game-btn {
+  grid-column: 1 / -1;
+  margin-top: 10px;
+}
+
+/* Экран настройки */
+#score-setup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 30, 60, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+  padding: 20px;
+}
+.score-modal {
+  background: #fff;
+  border-radius: 24px;
+  padding: 24px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+.score-modal h2 { margin-bottom: 20px; color: #0d47a1; text-align: center; }
+.score-modal label { display: block; font-weight: 600; margin-bottom: 16px; color: #333; }
+.score-modal select {
+  padding: 8px 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 1.1rem; margin-left: 10px;
+}
+.team-input-row {
+  display: flex; gap: 10px; margin-bottom: 10px; align-items: center;
+}
+.team-input-row input[type="text"] {
+  flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 10px; font-size: 1.1rem;
+}
+.team-input-row input[type="color"] {
+  width: 50px; height: 46px; border: none; border-radius: 10px; cursor: pointer; padding: 0;
+}
+.modal-buttons-row {
+  display: flex; gap: 12px; margin-top: 24px;
+}
+.modal-buttons-row .btn { flex: 1; padding: 16px; }
+
+/* Экран табло */
+#score-board-overlay {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(160deg, #e3f2fd 0%, #bbdefb 100%);
+  display: flex;
+  flex-direction: column;
+  z-index: 250;
+  padding: 16px;
+  overflow-y: auto;
+}
+.score-topbar {
+  display: flex; justify-content: space-between; margin-bottom: 20px;
+  width: 100%; max-width: 600px; margin-left: auto; margin-right: auto;
+}
+.score-topbar .btn { padding: 12px 20px; font-size: 1rem; }
+
+#score-teams-list {
+  display: flex; flex-direction: column; gap: 16px; width: 100%; max-width: 600px;
+  margin: 0 auto; flex: 1;
+}
+
+/* Кнопки команд */
+.score-team-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  border-radius: 16px;
+  border: 3px solid transparent;
+  background: #1565c0;
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  transition: all 0.2s ease;
+  position: relative;
+  width: 100%;
+}
+.score-team-btn:active { transform: scale(0.98); }
+
+/* Активная команда (чей ход) */
+.score-team-btn.active {
+  border-color: #ffeb3b; /* Желтая рамка */
+  box-shadow: 0 0 15px rgba(255, 235, 59, 0.8), 0 4px 10px rgba(0,0,0,0.2);
+  transform: scale(1.02);
+}
+
+/* Блиц (10, 20) */
+.score-team-btn.blitz {
+  background: #fbc02d !important; /* Желтый */
+  color: #333 !important;
+}
+/* Усложнение (5, 15, 25) */
+.score-team-btn.hard {
+  background: #795548 !important; /* Коричневый */
+}
+
+/* Подписи Блиц / Усложнение */
+.score-badge {
+  font-size: 0.9rem;
+  margin-top: 8px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: rgba(0,0,0,0.2);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+/* Кнопка Завершить ход */
+.score-end-turn {
+  width: 100%; max-width: 600px; margin: 20px auto 0 auto;
+  padding: 20px; font-size: 1.3rem; border-radius: 16px;
+}
+
+/* Модалка выбора баллов */
+#score-points-modal {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+  display: flex; align-items: center; justify-content: center; z-index: 350; padding: 20px;
+}
+.score-points-content {
+  background: #fff; border-radius: 20px; padding: 20px;
+  width: 100%; max-width: 400px; text-align: center;
+}
+.score-points-content h3 { margin-bottom: 16px; color: #0d47a1; font-size: 1.4rem; }
+.score-points-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px;
+}
+.score-points-grid button {
+  padding: 18px 10px; border: none; border-radius: 12px;
+  font-size: 1.3rem; font-weight: 700; color: #fff; cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2); transition: transform 0.1s;
+}
+.score-points-grid button:active { transform: scale(0.95); }
+
+/* Цвета кнопок баллов */
+.score-points-grid .minus { background: #c62828; }
+.score-points-grid .plus { background: #2e7d32; }
+.score-points-grid .zero { background: #757575; }
+
+/* Чуть отступа для кнопки "Отмена" в модалке баллов */
+#score-modal-close {
+  margin-top: 10px;
+  width: 100%;
+  padding: 15px;
 }
