@@ -120,6 +120,7 @@ export function openGame(key) {
   clearIntervals();
 
   overlay.classList.remove('hidden');
+  history.pushState({ game: key }, '', ''); // Добавляем запись в историю
   content.innerHTML = '';
   timerDisplay.classList.add('hidden');
   modalButtons.classList.add('hidden');
@@ -214,9 +215,11 @@ function initScoreGame() {
     if (scoreState && scoreState.teams && scoreState.teams.length > 0) {
       renderBoard();
       boardOverlay.classList.remove('hidden');
+      history.pushState({ scoreBoard: true }, '', '');
     } else {
       renderSetupInputs(parseInt(teamCountSelect.value, 10));
       setupOverlay.classList.remove('hidden');
+      history.pushState({ scoreSetup: true }, '', '');
     }
   });
 
@@ -238,6 +241,7 @@ function initScoreGame() {
     setupOverlay.classList.add('hidden');
     renderBoard();
     boardOverlay.classList.remove('hidden');
+    history.pushState({ scoreBoard: true }, '', '');
   });
 
   // --- ИГРОВОЕ ТАБЛО ---
@@ -314,6 +318,7 @@ function initScoreGame() {
     pointsGrid.appendChild(zeroBtn);
 
     pointsModal.classList.remove('hidden');
+    history.pushState({ scoreModal: true }, '', '');
   }
 
   function closePointsModal() {
@@ -345,6 +350,7 @@ function initScoreGame() {
       boardOverlay.classList.add('hidden');
       renderSetupInputs(parseInt(teamCountSelect.value, 10));
       setupOverlay.classList.remove('hidden');
+      history.pushState({ scoreSetup: true }, '', '');
     }
   });
 
@@ -355,6 +361,36 @@ function initScoreGame() {
 
 // Запуск модуля подсчета
 initScoreGame();
+
+/* ============ ОБРАБОТКА СИСТЕМНОЙ КНОПКИ "НАЗАД" ============ */
+window.addEventListener('popstate', () => {
+  // 1. Если открыта модалка с баллами
+  const pointsModal = $('#score-points-modal');
+  if (pointsModal && !pointsModal.classList.contains('hidden')) {
+    pointsModal.classList.add('hidden');
+    return;
+  }
+
+  // 2. Если открыто табло игры
+  const boardOverlay = $('#score-board-overlay');
+  if (boardOverlay && !boardOverlay.classList.contains('hidden')) {
+    boardOverlay.classList.add('hidden');
+    return;
+  }
+
+  // 3. Если открыты настройки команд
+  const setupOverlay = $('#score-setup-overlay');
+  if (setupOverlay && !setupOverlay.classList.contains('hidden')) {
+    setupOverlay.classList.add('hidden');
+    return;
+  }
+
+  // 4. Если открыто окно рисования или любой другой игры
+  if (!drawOverlay.classList.contains('hidden') || !overlay.classList.contains('hidden')) {
+    closeOverlay();
+    return;
+  }
+});
 
 /* ============ БЛОКИРОВКА СКРОЛЛА ============ */
 const scoreOverlays = [$('#score-setup-overlay'), $('#score-board-overlay'), $('#score-points-modal')];
