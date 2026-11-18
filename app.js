@@ -13,7 +13,7 @@ export const GAMES = { draw, speak, show, reverse, yesno, blitz, dice, rules };
 
 /* ============ СОСТОЯНИЕ ============ */
 export const state = {
-  currentGame: null,   // { key, meta, currentWord, currentWords }
+  currentGame: null,
   timerInterval: null,
   countdownInterval: null,
   isRunning: false,
@@ -148,7 +148,7 @@ export function closeOverlay() {
   startBtn.onclick = null;
 }
 
-/* ============ ИНИЦИАЛИЗАЦИЯ ============ */
+/* ============ ИНИЦИАЛИЗАЦИЯ ОСНОВНЫХ ИГР ============ */
 document.querySelectorAll('[data-game]').forEach(btn => {
   btn.addEventListener('click', () => openGame(btn.dataset.game));
 });
@@ -157,21 +157,232 @@ overlay.addEventListener('click', (e) => {
   if (e.target === overlay) closeOverlay();
 });
 
+/* ============================================================
+   ============ МОДУЛЬ ПОДСЧЕТА БАЛЛОВ =========================
+   ============================================================ */
+function initScoreGame() {
+  const SCORE_STORAGE_KEY = 'scoreGameState_v1';
+  const SCORE_SPECIAL_POINTS = { 5: 'hard', 15: 'hard', 25: 'hard', 10: 'blitz', 20: 'blitz' };
+
+  const scoreGameBtn = $('#score-game-btn');
+  const setupOverlay = $('#score-setup-overlay');
+  const boardOverlay = $('#score-board-overlay');
+  const teamCountSelect = $('#score-team-count');
+  const teamsConfig = $('#score-teams-config');
+  const startBtn = $('#score-start-btn');
+  const cancelBtn = $('#score-cancel-btn');
+  const teamsList = $('#score-teams-list');
+  const endTurnBtn = $('#score-end-turn-btn');
+  const resetBtn = $('#score-reset-btn');
+  const exitBtn = $('#score-exit-btn');
+  const pointsModal = $('#score-points-modal');
+  const modalTeamName = $('#score-modal-team-name');
+  const pointsGrid = $('#score-points-grid');
+  const modalCloseBtn = $('#score-modal-close');
+
+  // Если кнопки нет на странице, прерываем инициализацию (защита от ошибок)
+  if (!scoreGameBtn) return;
+
+  const DEFAULT_COLORS = ['#1565c0', '#c62828', '#2e7d32', '#f57c00'];
+  let scoreState = null;
+  let activeTeamIndex = 0;
+
+  // Загрузка состояния при старте
+  try {
+    const saved = localStorage.getItem(SCORE_STORAGE_KEY);
+    if (saved) {
+      scoreState = JSON.parse(saved);
+      activeTeamIndex = scoreState.activeTeamIndex || 0;
+    }
+  } catch (e) { console.warn('Ошибка загрузки', e); }
+
+  // --- НАСТРОЙКА ---
+  function renderSetupInputs(count) {
+    teamsConfig.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+      const row = document.createElement('div');
+      row.className = 'team-input-row';
+      row.innerHTML = `
+        <input type="text" placeholder="Команда ${i + 1}" value="Команда ${i + 1}">
+        <input type="color" value="${DEFAULT_COLORS[i % DEFAULT_COLORS.length]}">
+      `;
+      teamsConfig.appendChild(row);
+    }
+  }
+
+  scoreGameBtn.addEventListener('click', () => {
+    if (scoreState && scoreState.teams && scoreState.teams.length > 0) {
+      renderBoard();
+      boardOverlay.classList.remove('hidden');
+    } else {
+      renderSetupInputs(parseInt(teamCountSelect.value, 10));
+      setupOverlay.classList.remove('hidden');
+    }
+  });
+
+  teamCountSelect.addEventListener('change', () => renderSetupInputs(parseInt(teamCountSelect.value, 10)));
+
+  cancelBtn.addEventListener('click', () => setupOverlay.classList.add('hidden'));
+
+  startBtn.addEventListener('click', () => {
+    const rows = teamsConfig.querySelectorAll('.team-input-row');
+    const teams = [];
+    rows.forEach((row) => {
+      const name = row.querySelector('input[type="text"]').value.trim() || 'Команда';
+      const color = row.querySelector('input[type="color"]').value;
+      teams.push({ name, color, score: 0 });
+    });
+    scoreState = { teams };
+    activeTeamIndex = 0;
+    saveState();
+    setupOverlay.classList.add('hidden');
+    renderBoard();
+    boardOverlay.classList.remove('hidden');
+  });
+
+  // --- ИГРОВОЕ ТАБЛО ---
+  function saveState() {
+    if (scoreState) {
+      localStorage.setItem(SCORE_STORAGE_KEY, JSON.stringify({ ...scoreState, activeTeamIndex }));
+    }
+  }
+
+  function renderBoard() {
+    if (!scoreState) return;
+    teamsList.innerHTML = '';
+
+    scoreState.teams.forEach((team, index) => {
+      const btn = document.createElement('button');
+      btn.className = 'score-team-btn';
+
+      if (index === activeTeamIndex) btn.classList.add('active');
+
+      const special = SCORE_SPECIAL_POINTS[team.score];
+      let badgeHtml = '';
+
+      if (special === 'blitz') {
+        btn.classList.add('blitz');
+        badgeHtml = '<span class="score-badge">⚡ Блиц</span>';
+      } else if (special === 'hard') {
+        btn.classList.add('hard');
+        badgeHtml = '<span class="score-badge">💩 Усложнение</span>';
+      }
+
+      // Красим в цвет команды, только если нет особого статуса
+      if (!special) {
+        btn.style.backgroundColor = team.color;
+      }
+
+      btn.innerHTML = `
+        <div>${team.name} — ${team.score}</div>
+        ${badgeHtml}
+      `;
+
+      btn.addEventListener('click', () => openPointsModal(team, index));
+      teamsList.appendChild(btn);
+    });
+  }
+
+  // --- МОДАЛКА БАЛЛОВ ---
+  function openPointsModal(team, index) {
+    // ПРОВЕРКА: Если кликнули не по активной команде — выходим
+    if (index !== activeTeamIndex) {
+      if (navigator.vibrate) navigator.vibrate(50); // Легкая вибрация для понимания
+      return; 
+    }
+
+    modalTeamName.textContent = team.name;
+    pointsGrid.innerHTML = '';
+
+    for (let i = -3; i <= 6; i++) {
+      if (i === 0) continue;
+      const btn = document.createElement('button');
+      btn.textContent = i > 0 ? `+${i}` : i;
+      btn.className = i > 0 ? 'plus' : 'minus';
+      btn.addEventListener('click', () => {
+        addPoints(index, i);
+        closePointsModal();
+      });
+      pointsGrid.appendChild(btn);
+    }
+
+    const zeroBtn = document.createElement('button');
+    zeroBtn.textContent = '0 (без изменений)';
+    zeroBtn.className = 'zero';
+    zeroBtn.style.gridColumn = '1 / -1';
+    zeroBtn.addEventListener('click', closePointsModal);
+    pointsGrid.appendChild(zeroBtn);
+
+    pointsModal.classList.remove('hidden');
+  }
+
+  function closePointsModal() {
+    pointsModal.classList.add('hidden');
+  }
+
+  modalCloseBtn.addEventListener('click', closePointsModal);
+
+  // --- ИЗМЕНЕНИЕ БАЛЛОВ ---
+  function addPoints(teamIndex, amount) {
+    scoreState.teams[teamIndex].score += amount;
+    saveState();
+    renderBoard();
+  }
+
+  // --- УПРАВЛЕНИЕ ХОДОМ ---
+  endTurnBtn.addEventListener('click', () => {
+    activeTeamIndex = (activeTeamIndex + 1) % scoreState.teams.length;
+    saveState();
+    renderBoard();
+  });
+
+  // --- СБРОС И ВЫХОД ---
+  resetBtn.addEventListener('click', () => {
+    if (confirm('Сбросить все баллы и начать заново?')) {
+      localStorage.removeItem(SCORE_STORAGE_KEY);
+      scoreState = null;
+      activeTeamIndex = 0;
+      boardOverlay.classList.add('hidden');
+      renderSetupInputs(parseInt(teamCountSelect.value, 10));
+      setupOverlay.classList.remove('hidden');
+    }
+  });
+
+  exitBtn.addEventListener('click', () => {
+    boardOverlay.classList.add('hidden');
+  });
+}
+
+// Запуск модуля подсчета
+initScoreGame();
+
+/* ============ БЛОКИРОВКА СКРОЛЛА ============ */
+const scoreOverlays = [$('#score-setup-overlay'), $('#score-board-overlay'), $('#score-points-modal')];
+
+const observer = new MutationObserver(() => {
+  const isAnyOverlayOpen = 
+    !overlay.classList.contains('hidden') || 
+    !drawOverlay.classList.contains('hidden') ||
+    scoreOverlays.some(el => el && !el.classList.contains('hidden'));
+
+  document.body.style.overflow = isAnyOverlayOpen ? 'hidden' : '';
+});
+
+observer.observe(overlay, { attributes: true, attributeFilter: ['class'] });
+observer.observe(drawOverlay, { attributes: true, attributeFilter: ['class'] });
+scoreOverlays.forEach(el => {
+  if (el) observer.observe(el, { attributes: true, attributeFilter: ['class'] });
+});
+
 /* ============ PWA: автообновление ============ */
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     try {
       const registration = await navigator.serviceWorker.register('service-worker.js');
-
-      // Периодическая проверка обновлений
       setInterval(() => registration.update(), 30000);
-
-      // Проверка при возврате на вкладку
       document.addEventListener('visibilitychange', () => {
         if (!document.hidden) registration.update();
       });
-
-      // Когда новый SW активировался — перезагружаем страницу
       registration.addEventListener('updatefound', () => {
         const newWorker = registration.installing;
         if (!newWorker) return;
@@ -184,12 +395,3 @@ if ('serviceWorker' in navigator) {
     } catch (e) { /* ignore */ }
   });
 }
-
-/* ============ БЛОКИРОВКА СКРОЛЛА ============ */
-const observer = new MutationObserver(() => {
-  document.body.style.overflow =
-    (!overlay.classList.contains('hidden') || !drawOverlay.classList.contains('hidden'))
-      ? 'hidden' : '';
-});
-observer.observe(overlay, { attributes: true, attributeFilter: ['class'] });
-observer.observe(drawOverlay, { attributes: true, attributeFilter: ['class'] });
