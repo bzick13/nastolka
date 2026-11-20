@@ -97,7 +97,7 @@ export function hideTimerAndStart() {
 
 export function showTimerAndStart(value) {
   timerDisplay.classList.remove('hidden');
-  timerDisplay.textContent = value;
+  timerDisplay.innerHTML = `<span class="timer-label">Время:</span> ${value}`;
   startBtn.classList.remove('hidden');
 }
 
@@ -184,7 +184,18 @@ function initScoreGame() {
   // Если кнопки нет на странице, прерываем инициализацию (защита от ошибок)
   if (!scoreGameBtn) return;
 
-  const DEFAULT_COLORS = ['#1565c0', '#c62828', '#2e7d32', '#f57c00'];
+  // ИСПРАВЛЕНИЕ: 8 уникальных цветов для команд
+  const DEFAULT_COLORS = [
+    '#1565c0', // Синий
+    '#c62828', // Красный
+    '#2e7d32', // Зеленый
+    '#f57c00', // Оранжевый
+    '#8e24aa', // Фиолетовый
+    '#00838f', // Бирюзовый
+    '#d81b60', // Розовый
+    '#5d4037'  // Коричневый
+  ];
+
   let scoreState = null;
   let activeTeamIndex = 0;
 
