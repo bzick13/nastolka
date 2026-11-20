@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#1565c0">
-  <title>Настолка</title>
+  <title>Настолка2</title>
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎲</text></svg>">
 </head>
 <body>
   <header>
-    <h1>Настолка</h1>
+    <h1>Настолка2</h1>
   </header>
 
   <main id="menu">
@@ -20,11 +20,17 @@
     <button class="btn blue" data-game="show">🙌 Показывать</button>
     <button class="btn blue" data-game="reverse">🔄 Реверс</button>
     <button class="btn blue" data-game="yesno">✅ Да/Нет</button>
-    <button class="btn blue" data-game="blitz">⚡ Блиц</button>
+
+    <!-- Кнопка Шлакоблокунь -->
+    <button class="btn blue" id="shlakoblokun-btn">🗿 Шлакоблокунь</button>
+
+    <!-- Кнопка Блиц (желтая, во всю ширину) -->
+    <button class="btn yellow" id="blitz-btn" data-game="blitz">💥 Блиц</button>
+
     <button class="btn lightblue" data-game="dice">🎲 Бросить кубик</button>
     <button class="btn lightblue" data-game="rules">📖 Правила игры</button>
 
-    <!-- Новая кнопка подсчета баллов -->
+    <!-- Кнопка подсчета баллов -->
     <button class="btn green" id="score-game-btn">📊 Подсчет баллов</button>
   </main>
 
