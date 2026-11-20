@@ -210,9 +210,9 @@ h1 {
   top: 10px;
   left: 16px;
   display: flex;
+  flex-direction: column; /* ВЫСТРАИВАЕМ В СТОЛБИК */
   gap: 10px;
   z-index: 10;
-  flex-wrap: nowrap;
 }
 
 #draw-toolbar button {
@@ -227,6 +227,9 @@ h1 {
   transition: transform 0.1s, background 0.15s;
   white-space: nowrap;
   flex: 0 0 auto;
+  text-align: left;
+  display: flex;
+  align-items: center;
 }
 
 #draw-toolbar button:active {
@@ -246,6 +249,24 @@ h1 {
 
 #done-btn { background: #2e7d32; }
 #done-btn:hover { background: #388e3c; }
+
+/* Стили для кнопки цвета с кружком */
+#color-picker-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px !important;
+}
+
+#current-color-indicator {
+  display: block;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: #000000;
+  border: 2px solid #fff;
+  box-shadow: 0 0 4px rgba(0,0,0,0.3);
+}
 
 #canvas {
   display: block;
@@ -311,8 +332,8 @@ h1 {
   #draw-toolbar {
     top: 6px;
     left: 10px;
-    gap: 8px;
-    flex-wrap: nowrap;
+    gap: 6px;
+    flex-direction: row; /* В горизонтальном режиме снова в строку */
   }
 
   #draw-toolbar button {
@@ -329,7 +350,7 @@ h1 {
     justify-content: center;
   }
   .score-team-btn {
-    width: calc(50% - 10px); /* По две кнопки в ряд */
+    width: calc(50% - 10px);
     padding: 12px;
     font-size: 1.1rem;
   }
@@ -340,6 +361,7 @@ h1 {
     top: 8px;
     left: 10px;
     gap: 8px;
+    flex-direction: column !important; /* Принудительный столбик на телефонах */
   }
   #draw-toolbar button {
     padding: 8px 12px;
@@ -503,6 +525,75 @@ h1 {
 /* Чуть отступа для кнопки "Отмена" в модалке баллов */
 #score-modal-close {
   margin-top: 10px;
+  width: 100%;
+  padding: 15px;
+}
+
+/* Подпись к таймеру (слово "Время:") */
+.timer-label {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #2e7d32; /* Зеленый цвет, как у баллов */
+  margin-right: 4px;
+}
+
+/* ============ ВСПЛЫВАЮЩАЯ ПАЛИТРА ============ */
+#color-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 400;
+}
+
+.color-modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.color-modal-content h3 {
+  margin-bottom: 16px;
+  color: #0d47a1;
+  font-size: 1.2rem;
+}
+
+#color-palette {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* 5 колонок */
+  gap: 10px;
+  margin-bottom: 20px;
+  justify-items: center;
+}
+
+#color-palette .color-btn {
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 50% !important;
+  border: 2px solid #ccc !important;
+  cursor: pointer;
+  padding: 0 !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+  transition: transform 0.1s;
+}
+
+#color-palette .color-btn:active {
+  transform: scale(0.9);
+}
+
+#color-palette .color-btn.active {
+  border: 3px solid #333 !important;
+  box-shadow: 0 0 0 2px #fff, 0 2px 6px rgba(0,0,0,0.3) !important;
+  transform: scale(1.1);
+}
+
+#close-color-modal {
   width: 100%;
   padding: 15px;
 }
