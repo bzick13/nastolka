@@ -75,6 +75,10 @@ h1 {
 .red { background: #c62828; }
 .red:hover { background: #d32f2f; }
 
+/* Новый желтый цвет для Блица */
+.yellow { background: #fbc02d; color: #333; }
+.yellow:hover { background: #f9a825; }
+
 /* Оверлей (для основных игр) */
 #overlay {
   position: fixed;
@@ -349,6 +353,11 @@ h1 {
 #score-game-btn {
   grid-column: 1 / -1;
   margin-top: 10px;
+}
+
+/* Кнопка "Блиц" на всю ширину */
+#blitz-btn {
+  grid-column: 1 / -1;
 }
 
 /* Экран настройки */
