@@ -4,14 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#1565c0">
-  <title>Настолка</title>
+  <title>Настолка2</title>
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎲</text></svg>">
 </head>
 <body>
   <header>
-    <h1>Настолка</h1>
+    <h1>Настолка2</h1>
   </header>
 
   <main id="menu">
@@ -37,7 +37,7 @@
   <!-- Оверлей для обычных игр -->
   <div id="overlay" class="hidden">
     <div id="modal">
-      <div id="timer-display" class="hidden">60</div>
+      <div id="timer-display" class="hidden"><span class="timer-label">Время:</span> 60</div>
       <div id="content"></div>
       <div id="modal-buttons" class="hidden">
         <button id="start-btn" class="btn green">Старт</button>
@@ -48,13 +48,50 @@
 
   <!-- Окно для рисования -->
   <div id="draw-overlay" class="hidden">
+    <!-- Панель инструментов (в столбец) -->
     <div id="draw-toolbar">
-      <button id="eraser-btn" type="button">🧽 Стёрка</button>
-      <button id="clear-btn" type="button">🗑️ Стереть всё</button>
-      <button id="done-btn" type="button">✅ Готово</button>
+      <button id="done-btn" type="button">Готово</button>
+      <button id="clear-btn" type="button">Очистить всё</button>
+      <button id="eraser-btn" type="button">Ластик</button>
+      <button id="color-picker-btn" type="button"><span id="current-color-indicator"></span></button>
     </div>
     <div id="draw-timer">60</div>
     <canvas id="canvas"></canvas>
+  </div>
+
+  <!-- Всплывающее окно с палитрой -->
+  <div id="color-modal" class="hidden">
+    <div class="color-modal-content">
+      <h3>Выберите цвет</h3>
+      <div id="color-palette">
+        <!-- 1-й ряд: Черный, Синий, Зеленый, Красный, Желтый -->
+        <button class="color-btn active" data-color="#000000" style="background: #000000;"></button> <!-- Черный -->
+        <button class="color-btn" data-color="#1565c0" style="background: #1565c0;"></button> <!-- Синий -->
+        <button class="color-btn" data-color="#2e7d32" style="background: #2e7d32;"></button> <!-- Зеленый -->
+        <button class="color-btn" data-color="#c62828" style="background: #c62828;"></button> <!-- Красный -->
+        <button class="color-btn" data-color="#fbc02d" style="background: #fbc02d;"></button> <!-- Желтый -->
+
+        <!-- Остальные цвета (порядок не важен) -->
+        <button class="color-btn" data-color="#9e9e9e" style="background: #9e9e9e;"></button> <!-- Серый -->
+        <button class="color-btn" data-color="#795548" style="background: #795548;"></button> <!-- Коричневый -->
+        <button class="color-btn" data-color="#03a9f4" style="background: #03a9f4;"></button> <!-- Голубой -->
+        <button class="color-btn" data-color="#ff5252" style="background: #ff5252;"></button> <!-- Светло-красный -->
+        <button class="color-btn" data-color="#e91e63" style="background: #e91e63;"></button> <!-- Розовый -->
+
+        <button class="color-btn" data-color="#f8bbd0" style="background: #f8bbd0;"></button> <!-- Светло-розовый -->
+        <button class="color-btn" data-color="#f57c00" style="background: #f57c00;"></button> <!-- Оранжевый -->
+        <button class="color-btn" data-color="#ffb300" style="background: #ffb300;"></button> <!-- Янтарный -->
+        <button class="color-btn" data-color="#fff59d" style="background: #fff59d;"></button> <!-- Бледно-желтый -->
+        <button class="color-btn" data-color="#8bc34a" style="background: #8bc34a;"></button> <!-- Салатовый -->
+
+        <button class="color-btn" data-color="#69f0ae" style="background: #69f0ae;"></button> <!-- Мятный -->
+        <button class="color-btn" data-color="#004d40" style="background: #004d40;"></button> <!-- Темно-зеленый -->
+        <button class="color-btn" data-color="#00838f" style="background: #00838f;"></button> <!-- Бирюзовый -->
+        <button class="color-btn" data-color="#8e24aa" style="background: #8e24aa;"></button> <!-- Фиолетовый -->
+        <button class="color-btn" data-color="#d1c4e9" style="background: #d1c4e9;"></button> <!-- Светло-фиолетовый -->
+      </div>
+      <button id="close-color-modal" class="btn red">Отмена</button>
+    </div>
   </div>
 
   <!-- Окно настройки подсчета баллов -->
@@ -66,6 +103,8 @@
           <option value="2">2</option>
           <option value="3">3</option>
           <option value="4">4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
         </select>
       </label>
       <div id="score-teams-config"></div>
