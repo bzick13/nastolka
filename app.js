@@ -266,7 +266,7 @@ function initScoreGame() {
 
       if (special === 'blitz') {
         btn.classList.add('blitz');
-        badgeHtml = '<span class="score-badge">⚡ Блиц</span>';
+        badgeHtml = '<span class="score-badge">💥 Блиц</span>';
       } else if (special === 'hard') {
         btn.classList.add('hard');
         badgeHtml = '<span class="score-badge">💩 Усложнение</span>';
