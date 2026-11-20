@@ -27,10 +27,16 @@ export const META = {
 let ctx = null;
 let eraserMode = false;
 let drawing = false;
+let currentColor = '#000000';
 
 const clearBtn = document.getElementById('clear-btn');
 const eraserBtn = document.getElementById('eraser-btn');
 const doneBtn = document.getElementById('done-btn');
+const colorPickerBtn = document.getElementById('color-picker-btn');
+const colorIndicator = document.getElementById('current-color-indicator'); // Элемент кружка
+const colorModal = document.getElementById('color-modal');
+const closeColorModalBtn = document.getElementById('close-color-modal');
+const colorBtns = document.querySelectorAll('.color-btn');
 
 /* Открытие */
 export function open(currentGame) {
@@ -41,7 +47,7 @@ export function open(currentGame) {
     <div class="points">Баллы: ${META.points}</div>
   `;
   timerDisplay.classList.remove('hidden');
-  timerDisplay.textContent = META.time;
+  timerDisplay.innerHTML = `<span class="timer-label">Время:</span> ${META.time}`;
   showModalButtons();
   startBtn.classList.remove('hidden');
   startBtn.onclick = () => start(currentGame);
@@ -57,6 +63,7 @@ function start(currentGame) {
   removeDrawingListeners();
 
   drawOverlay.classList.remove('hidden');
+  colorModal.classList.add('hidden');
 
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
@@ -69,13 +76,29 @@ function start(currentGame) {
 
   eraserMode = false;
   drawing = false;
+  currentColor = '#000000';
   eraserBtn.classList.remove('active');
+
+  // Обновляем кружок на кнопке при старте
+  if (colorIndicator) colorIndicator.style.backgroundColor = currentColor;
+
+  // Сброс выделения палитры (первый цвет активен)
+  colorBtns.forEach(btn => btn.classList.remove('active'));
+  if(colorBtns[0]) colorBtns[0].classList.add('active');
+
   applyBrush();
 
-  // Навешиваем обработчики кнопок СРАЗУ — «Готово» работает и во время отсчёта
+  // Навешиваем обработчики
   clearBtn.addEventListener('click', onClear);
   eraserBtn.addEventListener('click', onToggleEraser);
   doneBtn.addEventListener('click', onDone);
+  colorPickerBtn.addEventListener('click', onOpenColorModal);
+  closeColorModalBtn.addEventListener('click', onCloseColorModal);
+
+  // Обработчики для кнопок палитры
+  colorBtns.forEach(btn => {
+    btn.addEventListener('click', onColorChange);
+  });
 
   // Рисование — только после отсчёта
   let count = 3;
@@ -104,7 +127,7 @@ function applyBrush() {
     ctx.strokeStyle = '#fff';
     ctx.lineWidth = 30;
   } else {
-    ctx.strokeStyle = '#000';
+    ctx.strokeStyle = currentColor;
     ctx.lineWidth = 4;
   }
   ctx.lineCap = 'round';
@@ -128,7 +151,7 @@ function startDrawTimer(currentGame) {
   }, 1000);
 }
 
-/* Завершение раунда — вызывается и по таймеру, и по кнопке «Готово» */
+/* Завершение раунда */
 function endRound(currentGame) {
   clearInterval(state.timerInterval);
   clearInterval(state.countdownInterval);
@@ -139,6 +162,7 @@ function endRound(currentGame) {
   if (ctx) ctx.beginPath();
 
   removeDrawingListeners();
+  colorModal.classList.add('hidden');
 
   drawOverlay.classList.add('hidden');
   state.isRunning = false;
@@ -147,7 +171,7 @@ function endRound(currentGame) {
     <div class="word">${currentGame.currentWord}</div>
     <div class="points">Баллы: ${META.points}</div>
   `;
-  timerDisplay.textContent = '0';
+  timerDisplay.innerHTML = `<span class="timer-label">Время:</span> 0`;
   timerDisplay.classList.remove('hidden');
   showModalButtons();
   startBtn.classList.add('hidden');
@@ -173,8 +197,7 @@ function onStart(e) {
   ctx.beginPath();
   ctx.moveTo(p.x, p.y);
 
-  // 🔑 ИСПРАВЛЕНИЕ: Рисуем точку той же толщины, что и линия
-  // Делаем крошечный отрезок, чтобы Canvas отрисовал круг (за счет lineCap: 'round')
+  // Рисуем точку той же толщины, что и линия
   ctx.lineTo(p.x + 0.1, p.y + 0.1);
   ctx.stroke();
   ctx.beginPath();
@@ -206,16 +229,53 @@ function onToggleEraser(e) {
   if (e) { e.preventDefault(); e.stopPropagation(); }
   eraserMode = !eraserMode;
   eraserBtn.classList.toggle('active', eraserMode);
+
+  if (eraserMode) {
+    colorBtns.forEach(btn => btn.classList.remove('active'));
+  } else {
+    colorBtns.forEach(btn => {
+      if (btn.dataset.color === currentColor) btn.classList.add('active');
+    });
+  }
+
   applyBrush();
 }
 
-/* 🔑 Готово */
+/* ============ ПАЛИТРА ============ */
+function onOpenColorModal(e) {
+  if (e) { e.preventDefault(); e.stopPropagation(); }
+  colorModal.classList.remove('hidden');
+}
+
+function onCloseColorModal(e) {
+  if (e) { e.preventDefault(); e.stopPropagation(); }
+  colorModal.classList.add('hidden');
+}
+
+function onColorChange(e) {
+  if (e) { e.preventDefault(); e.stopPropagation(); }
+  const btn = e.currentTarget;
+  currentColor = btn.dataset.color;
+
+  eraserMode = false;
+  eraserBtn.classList.remove('active');
+
+  colorBtns.forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  // Обновляем цвет кружка на кнопке
+  if (colorIndicator) colorIndicator.style.backgroundColor = currentColor;
+
+  applyBrush();
+  colorModal.classList.add('hidden');
+}
+
+/* Готово */
 function onDone(e) {
   if (e) { e.preventDefault(); e.stopPropagation(); }
-  if (!state.isRunning) return;          // уже завершили — игнорируем
+  if (!state.isRunning) return;
   if (!state.currentGame) return;
 
-  // прерываем текущую линию, чтобы после «Готово» ничего не дорисовывалось
   drawing = false;
   if (ctx) ctx.beginPath();
 
@@ -237,6 +297,7 @@ function enableDrawing() {
 
 export function cleanup() {
   removeDrawingListeners();
+  colorModal.classList.add('hidden');
 }
 
 function removeDrawingListeners() {
@@ -252,6 +313,12 @@ function removeDrawingListeners() {
   clearBtn.removeEventListener('click', onClear);
   eraserBtn.removeEventListener('click', onToggleEraser);
   doneBtn.removeEventListener('click', onDone);
+  colorPickerBtn.removeEventListener('click', onOpenColorModal);
+  closeColorModalBtn.removeEventListener('click', onCloseColorModal);
+
+  colorBtns.forEach(btn => {
+    btn.removeEventListener('click', onColorChange);
+  });
 
   drawing = false;
 }
