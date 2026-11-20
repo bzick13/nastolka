@@ -169,6 +169,14 @@ function onStart(e) {
   e.preventDefault();
   drawing = true;
   const p = getPos(e);
+
+  ctx.beginPath();
+  ctx.moveTo(p.x, p.y);
+
+  // 🔑 ИСПРАВЛЕНИЕ: Рисуем точку той же толщины, что и линия
+  // Делаем крошечный отрезок, чтобы Canvas отрисовал круг (за счет lineCap: 'round')
+  ctx.lineTo(p.x + 0.1, p.y + 0.1);
+  ctx.stroke();
   ctx.beginPath();
   ctx.moveTo(p.x, p.y);
 }
