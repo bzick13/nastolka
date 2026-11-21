@@ -210,7 +210,7 @@ h1 {
   top: 10px;
   left: 16px;
   display: flex;
-  flex-direction: column; /* ВЫСТРАИВАЕМ В СТОЛБИК */
+  flex-direction: column;
   gap: 10px;
   z-index: 10;
 }
@@ -250,7 +250,6 @@ h1 {
 #done-btn { background: #2e7d32; }
 #done-btn:hover { background: #388e3c; }
 
-/* Стили для кнопки цвета с кружком */
 #color-picker-btn {
   display: flex;
   align-items: center;
@@ -275,7 +274,6 @@ h1 {
   cursor: crosshair;
 }
 
-/* Countdown */
 .countdown {
   font-size: 5rem;
   font-weight: 800;
@@ -333,7 +331,7 @@ h1 {
     top: 6px;
     left: 10px;
     gap: 6px;
-    flex-direction: row; /* В горизонтальном режиме снова в строку */
+    flex-direction: row;
   }
 
   #draw-toolbar button {
@@ -343,7 +341,6 @@ h1 {
     white-space: nowrap;
   }
 
-  /* Адаптация табло под горизонтальный экран */
   #score-teams-list {
     flex-direction: row;
     flex-wrap: wrap;
@@ -361,7 +358,7 @@ h1 {
     top: 8px;
     left: 10px;
     gap: 8px;
-    flex-direction: column !important; /* Принудительный столбик на телефонах */
+    flex-direction: column !important;
   }
   #draw-toolbar button {
     padding: 8px 12px;
@@ -371,18 +368,15 @@ h1 {
 
 /* ============ ПОДСЧЕТ БАЛЛОВ ============ */
 
-/* Кнопка "Подсчет баллов" на всю ширину */
 #score-game-btn {
   grid-column: 1 / -1;
   margin-top: 10px;
 }
 
-/* Кнопка "Блиц" на всю ширину */
 #blitz-btn {
   grid-column: 1 / -1;
 }
 
-/* Экран настройки */
 #score-setup-overlay {
   position: fixed;
   inset: 0;
@@ -420,7 +414,6 @@ h1 {
 }
 .modal-buttons-row .btn { flex: 1; padding: 16px; }
 
-/* Экран табло */
 #score-board-overlay {
   position: fixed;
   inset: 0;
@@ -442,7 +435,6 @@ h1 {
   margin: 0 auto; flex: 1;
 }
 
-/* Кнопки команд */
 .score-team-btn {
   display: flex;
   flex-direction: column;
@@ -463,24 +455,20 @@ h1 {
 }
 .score-team-btn:active { transform: scale(0.98); }
 
-/* Активная команда (чей ход) */
 .score-team-btn.active {
-  border-color: #ffeb3b; /* Желтая рамка */
+  border-color: #ffeb3b;
   box-shadow: 0 0 15px rgba(255, 235, 59, 0.8), 0 4px 10px rgba(0,0,0,0.2);
   transform: scale(1.02);
 }
 
-/* Блиц (10, 20) */
 .score-team-btn.blitz {
-  background: #fbc02d !important; /* Желтый */
+  background: #fbc02d !important;
   color: #333 !important;
 }
-/* Усложнение (5, 15, 25) */
 .score-team-btn.hard {
-  background: #795548 !important; /* Коричневый */
+  background: #795548 !important;
 }
 
-/* Подписи Блиц / Усложнение */
 .score-badge {
   font-size: 0.9rem;
   margin-top: 8px;
@@ -491,13 +479,11 @@ h1 {
   text-transform: uppercase;
 }
 
-/* Кнопка Завершить ход */
 .score-end-turn {
   width: 100%; max-width: 600px; margin: 20px auto 0 auto;
   padding: 20px; font-size: 1.3rem; border-radius: 16px;
 }
 
-/* Модалка выбора баллов */
 #score-points-modal {
   position: fixed; inset: 0; background: rgba(0,0,0,0.6);
   display: flex; align-items: center; justify-content: center; z-index: 350; padding: 20px;
@@ -517,23 +503,20 @@ h1 {
 }
 .score-points-grid button:active { transform: scale(0.95); }
 
-/* Цвета кнопок баллов */
 .score-points-grid .minus { background: #c62828; }
 .score-points-grid .plus { background: #2e7d32; }
 .score-points-grid .zero { background: #757575; }
 
-/* Чуть отступа для кнопки "Отмена" в модалке баллов */
 #score-modal-close {
   margin-top: 10px;
   width: 100%;
   padding: 15px;
 }
 
-/* Подпись к таймеру (слово "Время:") */
 .timer-label {
   font-size: 1.2rem;
   font-weight: 600;
-  color: #2e7d32; /* Зеленый цвет, как у баллов */
+  color: #2e7d32;
   margin-right: 4px;
 }
 
@@ -566,7 +549,7 @@ h1 {
 
 #color-palette {
   display: grid;
-  grid-template-columns: repeat(5, 1fr); /* 5 колонок */
+  grid-template-columns: repeat(5, 1fr);
   gap: 10px;
   margin-bottom: 20px;
   justify-items: center;
@@ -596,4 +579,206 @@ h1 {
 #close-color-modal {
   width: 100%;
   padding: 15px;
+}
+
+/* ============ ИГРА ШЛАКОБЛОКУНЬ ============ */
+#shakoblokun-overlay {
+  position: fixed;
+  inset: 0;
+  background: #e3f2fd;
+  z-index: 250;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+/* Topbar теперь только для таймера */
+#shako-topbar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 10px 20px;
+  min-height: 60px;
+}
+
+/* Блок с результатом и кнопкой над клавиатурой */
+#shako-action-row {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 0 15px;
+  min-height: 54px; /* Фиксируем высоту, чтобы не прыгало */
+}
+
+/* Кнопка "Дальше"/"Завершить" */
+#shako-next-btn {
+  height: 48px;
+  padding: 0 20px;
+  font-size: 1.2rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  margin: 0;
+  box-sizing: border-box;
+  display: none; /* Скрыта по умолчанию, управляется JS */
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1;
+}
+
+/* Таймер */
+#shako-timer {
+  height: 48px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 15px !important;
+  box-sizing: border-box !important;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #c62828;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+#shako-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 500px;
+  margin-top: 10px;
+  flex: 1;
+}
+
+/* Контейнер картинки */
+#shako-image-container {
+  width: 90%;
+  max-width: 400px;
+  height: 300px; 
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  border-radius: 20px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+#shako-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* Слоты в одну строку */
+#shako-word-slots {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 20px;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 0 10px;
+}
+
+.shako-slot {
+  flex: 1;
+  min-width: 20px;
+  height: 45px;
+  border-radius: 8px;
+  background: #fff;
+  border: 2px solid #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.shako-slot.active {
+  border-color: #1565c0;
+  box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.2);
+}
+
+.shako-slot.correct {
+  background: #a5d6a7;
+  border-color: #2e7d32;
+  color: #1b5e20;
+}
+
+.shako-slot.wrong {
+  background: #ef9a9a;
+  border-color: #c62828;
+  color: #b71c1c;
+}
+
+/* Текст сообщения (слева) */
+#shako-message {
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-align: left;
+  margin: 0;
+  flex: 1; /* Занимает всё свободное место слева */
+}
+
+/* Клавиатура */
+#shako-keyboard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 500px;
+  margin-top: 15px;
+  padding: 0 10px 20px 10px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.shako-keyboard-row {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  width: 100%;
+}
+
+.shako-key {
+  flex: 1;
+  height: 58px;
+  border: none;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #1565c0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.shako-key:active {
+  background: #bbdefb;
+}
+
+.shako-key-backspace {
+  flex: 1;
+  background: #c62828;
+  color: #fff;
+  font-size: 1.4rem;
 }
