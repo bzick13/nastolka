@@ -30,9 +30,10 @@ export function open(currentGame) {
   currentGame.currentItem = rand(META.words);
 
   content.innerHTML = `
-    <div class="word" style="font-size: 1.8rem; margin-bottom: 10px;">Шлакоблокунь</div>
-    <div class="points" style="margin-bottom: 20px;">Угадай слово по картинке!</div>
-    <div class="points">Баллы: ${META.points}</div>
+    <div style="font-size: 1.05rem; font-weight: 600; color: #0d47a1; text-align: left; line-height: 1.5; margin-bottom: 15px;">
+      Будет показан коллаж из двух объектов или персонажей, нужно назвать получившийся гибрид. Соедините два слова в одно так, чтобы конец первого совпадал с началом второго (например: шлакоблок + окунь = шлакоблокунь, спорткар + карась = спорткарась).
+    </div>
+    <div class="points" style="margin-top: 10px;">Баллы: ${META.points}</div>
   `;
   timerDisplay.classList.remove('hidden');
   timerDisplay.innerHTML = `<span class="timer-label">Время:</span> ${META.time}`;
@@ -82,7 +83,6 @@ function launchGameScreen(currentGame) {
     gameOverlay.id = 'shakoblokun-overlay';
     gameOverlay.className = 'hidden';
 
-    // Обновленная структура HTML
     gameOverlay.innerHTML = `
       <div id="shako-topbar">
         <div id="shako-timer">60</div>
@@ -94,7 +94,7 @@ function launchGameScreen(currentGame) {
         <div id="shako-word-slots"></div>
       </div>
       
-      <!-- Новый блок: текст слева, кнопка справа -->
+      <!-- Блок: текст слева, кнопка справа -->
       <div id="shako-action-row">
         <div id="shako-message"></div>
         <button id="shako-next-btn" class="btn green">Дальше</button>
