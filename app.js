@@ -125,7 +125,11 @@ export function openGame(key) {
   content.innerHTML = '';
   timerDisplay.classList.add('hidden');
   modalButtons.classList.add('hidden');
+
+  // Принудительно показываем кнопки при открытии
   startBtn.classList.remove('hidden');
+  closeBtn.classList.remove('hidden');
+
   startBtn.onclick = null;
   closeBtn.onclick = closeOverlay;
 
@@ -149,7 +153,10 @@ export function closeOverlay() {
   state.currentGame = null;
   timerDisplay.classList.add('hidden');
   timerDisplay.style.color = '#c62828';
+
+  // Принудительно показываем кнопки при закрытии (чтобы не пропадали)
   startBtn.classList.remove('hidden');
+  closeBtn.classList.remove('hidden');
   startBtn.onclick = null;
 }
 
@@ -188,7 +195,6 @@ function initScoreGame() {
   // Если кнопки нет на странице, прерываем инициализацию (защита от ошибок)
   if (!scoreGameBtn) return;
 
-  // ИСПРАВЛЕНИЕ: 8 уникальных цветов для команд
   const DEFAULT_COLORS = [
     '#1565c0', // Синий
     '#c62828', // Красный
@@ -400,13 +406,7 @@ window.addEventListener('popstate', () => {
     return;
   }
 
-  // 4. Если открыто окно рисования или любой другой игры
-  if (!drawOverlay.classList.contains('hidden') || !overlay.classList.contains('hidden')) {
-    closeOverlay();
-    return;
-  }
-
-  // 5. Если открыта игра Шлакоблокунь
+  // 4. Если открыта игра Шлакоблокунь (проверяем ДО общего overlay)
   const shakoOverlay = document.getElementById('shakoblokun-overlay');
   if (shakoOverlay && !shakoOverlay.classList.contains('hidden')) {
     shakoblokun.cleanup?.();
@@ -414,6 +414,16 @@ window.addEventListener('popstate', () => {
     overlay.classList.add('hidden');
     state.isRunning = false;
     state.currentGame = null;
+
+    // Возвращаем кнопки
+    startBtn.classList.remove('hidden');
+    closeBtn.classList.remove('hidden');
+    return;
+  }
+
+  // 5. Если открыто окно рисования или любой другой игры
+  if (!drawOverlay.classList.contains('hidden') || !overlay.classList.contains('hidden')) {
+    closeOverlay();
     return;
   }
 });
