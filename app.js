@@ -7,9 +7,10 @@ import * as yesno from './games/yesno.js';
 import * as blitz from './games/blitz.js';
 import * as dice from './games/dice.js';
 import * as rules from './games/rules.js';
+import * as shakoblokun from './games/shakoblokun.js'; // Импорт новой игры
 
 /* Реестр игр: ключ → модуль */
-export const GAMES = { draw, speak, show, reverse, yesno, blitz, dice, rules };
+export const GAMES = { draw, speak, show, reverse, yesno, blitz, dice, rules, shakoblokun };
 
 /* ============ СОСТОЯНИЕ ============ */
 export const state = {
@@ -137,6 +138,9 @@ export function closeOverlay() {
 
   if (state.currentGame?.key === 'draw') {
     draw.cleanup?.();
+  }
+  if (state.currentGame?.key === 'shakoblokun') {
+    shakoblokun.cleanup?.();
   }
 
   drawOverlay.classList.add('hidden');
@@ -399,6 +403,17 @@ window.addEventListener('popstate', () => {
   // 4. Если открыто окно рисования или любой другой игры
   if (!drawOverlay.classList.contains('hidden') || !overlay.classList.contains('hidden')) {
     closeOverlay();
+    return;
+  }
+
+  // 5. Если открыта игра Шлакоблокунь
+  const shakoOverlay = document.getElementById('shakoblokun-overlay');
+  if (shakoOverlay && !shakoOverlay.classList.contains('hidden')) {
+    shakoblokun.cleanup?.();
+    shakoOverlay.classList.add('hidden');
+    overlay.classList.add('hidden');
+    state.isRunning = false;
+    state.currentGame = null;
     return;
   }
 });
