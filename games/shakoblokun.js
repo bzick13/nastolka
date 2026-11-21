@@ -30,7 +30,7 @@ export const META = {
     { word: 'КАПИБАРАБАН', image: 'image/Капибарабан.jpg' },
     { word: 'КАПИБАРАНКА', image: 'image/Капибаранка.jpg' },
     { word: 'КАСТРЮЛЯГУШКА', image: 'image/Кастрюлягушка.jpg' },
-    { word: 'КАТУШАНЧИК', image: 'image/Катушанчик.jpg' },
+    { word: 'КАТУШКАНЧИК', image: 'image/Катушканчик.jpg' },
     { word: 'КАШАЛОТОС', image: 'image/Кашалотос.jpg' },
     { word: 'КОКОСУЛЯ', image: 'image/Кокосуля.jpg' },
     { word: 'КОМАРКЕР', image: 'image/Комаркер.jpg' },
