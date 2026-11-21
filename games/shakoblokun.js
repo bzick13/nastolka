@@ -9,16 +9,33 @@ export const META = {
   time: 30,
   points: 1,
   words: [
+    { word: 'АЛЛИГАТОРТ', image: 'image/Аллигаторт.jpg' },
+    { word: 'АНТИЛОПАТА', image: 'image/Антилопата.jpg' },
+    { word: 'БАРАБАНАН', image: 'image/Барабанан.jpg' },
     { word: 'БЕГЕМОТЫГА', image: 'image/Бегемотыга.jpg' },
+    { word: 'БОГОМОЛОТОК', image: 'image/Богомолоток.jpg' },
+    { word: 'ВЕРБЛЮДО', image: 'image/Верблюдо.jpg' },
+    { word: 'ВОРОНАСОС', image: 'image/Воронасос.jpg' },
     { word: 'ГИТАРАКАН', image: 'image/Гитаракан.jpg' },
     { word: 'ДЯТЕЛЕФОН', image: 'image/Дятелефон.jpg' },
+    { word: 'ИГУАНАНАС', image: 'image/Игуананас.jpg' },
+    { word: 'КАЛЬМАРМЕЛАД', image: 'image/Кальмармелад.jpg' },
+    { word: 'КАПИБАРАБАН', image: 'image/Капибарабан.jpg' },
     { word: 'КАШАЛОТОС', image: 'image/Кашалотос.jpg' },
     { word: 'КОМАРКЕР', image: 'image/Комаркер.jpg' },
+    { word: 'КУВШИНШИЛА', image: 'image/Кувшиншила.jpg' },
+    { word: 'ЛЯГУШКАТУЛКА', image: 'image/Лягушкатулка.jpg' },
+    { word: 'МАРТЫШКАФ', image: 'image/Мартышкаф.jpg' },
     { word: 'НОСОРОГАЛИК', image: 'image/Носорогалик.jpg' },
+    { word: 'ПЕЛИКАНИСТРА', image: 'image/Пеликанистра.jpg' },
     { word: 'ПОПУГАЙКА', image: 'image/Попугайка.jpg' },
     { word: 'САМОВАРАН', image: 'image/Самоваран.jpg' },
     { word: 'СКАТОК', image: 'image/Скаток.jpg' },
-    { word: 'ШЛАКОБЛОКУНЬ', image: 'image/Шлакоблокунь.jpg' }
+    { word: 'СУРИКАТУШКА', image: 'image/Сурикатушка.jpg' },
+    { word: 'ТУКАНОЗ', image: 'image/Туканоэ.jpg' },
+    { word: 'ХОМЯКОРЬ', image: 'image/Хомякорь.jpg' },
+    { word: 'ШЛАКОБЛОКУНЬ', image: 'image/Шлакоблокунь.jpg' },
+    { word: 'ШМЕЛЬНИЦА', image: 'image/Шмельница.jpg' }
   ]
 };
 
