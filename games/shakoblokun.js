@@ -6,8 +6,8 @@ import {
 
 export const META = {
   label: 'Шлакоблокунь',
-  time: 60,
-  points: 3,
+  time: 30,
+  points: 1,
   words: [
     { word: 'БЕГЕМОТЫГА', image: 'image/Бегемотыга.jpg' },
     { word: 'ГИТАРАКАН', image: 'image/Гитаракан.jpg' },
